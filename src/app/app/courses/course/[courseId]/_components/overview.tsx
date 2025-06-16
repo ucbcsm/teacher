@@ -139,11 +139,6 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
                     </Tag>
                   ),
                 },
-                {
-                    key:"my_enrollment",
-                    label:"Mon inscription",
-                    children:""
-                }
               ]}
             />
             <Divider />

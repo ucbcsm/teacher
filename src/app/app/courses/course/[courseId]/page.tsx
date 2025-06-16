@@ -18,7 +18,6 @@ import { parseAsStringEnum, useQueryState } from "nuqs";
 import { StudentCourseGrades } from "./_components/grades";
 import { StudentCourseAttendances } from "./_components/attendances";
 import { CourseOverview } from "./_components/overview";
-import { StudentCourseEvaluations } from "./_components/evaluation";
 
 export default function Page() {
   const {
@@ -135,15 +134,6 @@ export default function Page() {
                 key: `assessments`,
                 label: "Notes", // TD/TP & Examens
                 children: <StudentCourseGrades />,
-              },
-              {
-                key: `course-evaluation`,
-                label: "Évaluation",
-                children: (
-                  <>
-                    <StudentCourseEvaluations />
-                  </>
-                ),
               },
             ]}
           />

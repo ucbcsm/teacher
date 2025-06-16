@@ -103,7 +103,6 @@ export const login = async (credentials: {
   password: string;
 }) => {
   try {
-    const { cookies } = (await import("next/headers")).default;
     const Cookies = await cookies();
 
     const res = await authApi.post("/jwt/create", credentials);

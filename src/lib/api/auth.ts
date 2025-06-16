@@ -69,7 +69,11 @@ export const getServerSession = async (): Promise<Session> => {
       error: null,
     };
   } catch (error: any) {
-    throw new Error("Failed to get server session");
+    const cookieStore = await cookies();
+    cookieStore.delete("accessToken");
+    cookieStore.delete("refreshToken");
+    return null;
+    // throw new Error("Failed to get server session");
   }
 };
 

@@ -4,7 +4,6 @@ import {
   LoadingOutlined,
   LogoutOutlined,
   MenuOutlined,
-  MoreOutlined,
   QuestionOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -89,21 +88,6 @@ export default function StudentLayout({
                 key: `/app/courses/`,
                 label: "Cours",
               },
-              { key: "/app/fees", label: "Frais & Paiements" },
-              {
-                key: `/app/programs`,
-                label: "Programmes d'études",
-              },
-              {
-                key: `/app/documents`,
-                label: "Documents",
-              },
-
-              {
-                key: `/app/discipline`,
-                label: "Discipline",
-              },
-              { key: "/app/terms", label: "Règlement intérieur" },
             ]}
             style={{ flex: 1, minWidth: 0, borderBottom: 0 }}
             onClick={({ key }) => {

@@ -204,7 +204,7 @@ export function YearSelector() {
               showInfo={false}
             />
             <Typography.Title type="secondary" level={3}>
-             Student Access Portal
+             Faculty Access Portal
             </Typography.Title>
             <Typography.Text type="secondary">
               © {new Date().getFullYear()} CI-UCBC. Tous droits réservés.

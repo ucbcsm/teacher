@@ -81,8 +81,7 @@ const CourseListItem: FC<CourseListItemProps> = ({ item }) => {
               onClick={() => router.push(`/app/courses/course/${item.id}`)}
             >
               <ReadOutlined />
-              {item.available_course.name}{" "}
-              <span>({item.available_course.code})</span>
+              {`${item.available_course.name} (${item.available_course.code})`}
             </Space>
           }
           description={item.departement.name}

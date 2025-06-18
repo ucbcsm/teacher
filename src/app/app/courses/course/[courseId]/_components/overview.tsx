@@ -12,6 +12,7 @@ import {
   Descriptions,
   List,
   Statistic,
+  Flex,
 } from "antd";
 import { BookOutlined, UserOutlined } from "@ant-design/icons";
 import { TaughtCourse } from "@/types";
@@ -40,7 +41,19 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
         </Typography.Title>
       </Space> */}
       <Row gutter={[24, 24]}>
-        <Col xs={24} sm={24} md={16}>
+        <Col xs={24} sm={24} md={6}>
+        <Card variant="borderless">
+              <Flex justify="space-between">
+                <Statistic
+                  title="Heures prestées"
+                  value={`0/${
+                    course?.theoretical_hours! + course?.practical_hours!
+                  }`}
+                />
+              </Flex>
+            </Card>
+        </Col>
+        <Col xs={24} sm={24} md={12}>
           <Space direction="vertical" size="middle">
             <Descriptions
               title={
@@ -48,7 +61,7 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
                   <BookOutlined /> <span>Vue d&apos;ensemble du cours</span>
                 </Space>
               }
-              column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
+              column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 3, xxl: 3 }}
               items={[
                 {
                   key: "name",
@@ -176,7 +189,7 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
             <Divider />
           </Space>
         </Col>
-        <Col xs={24} sm={24} md={8}>
+        <Col xs={24} sm={24} md={6}>
           <Typography.Text type="secondary">Assistants</Typography.Text>
           <List
             dataSource={course?.assistants!}

@@ -44,12 +44,12 @@ import { Palette } from "@/components/palette";
 
 type NewAttendanceListFormProps = {
   course?: TaughtCourse;
-  courseEnrollements?: CourseEnrollment[]
+  courseEnrollements?: CourseEnrollment[];
 };
 
 export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
   course,
-  courseEnrollements
+  courseEnrollements,
 }) => {
   const {
     token: { colorPrimary },
@@ -130,7 +130,6 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
     }
   }, [courseEnrollements, course, form]);
 
-
   return (
     <>
       {contextHolder}
@@ -183,6 +182,70 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
             </Modal>
           </Space>
         }
+        footer={
+          <Flex justify="space-between" align="center">
+            <Form
+              form={form}
+              name="form_new-attendance-list"
+              initialValues={{
+                date: dayjs(),
+              }}
+              onFinish={onFinish}
+              disabled={isPending}
+              layout="horizontal"
+            >
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Form.Item
+                    name="date"
+                    label="Date de la séance"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Veuillez renseigner la date.",
+                      },
+                    ]}
+                  >
+                    <DatePicker
+                      format="DD/MM/YYYY"
+                      placeholder="DD/MM/YYYY"
+                      style={{ width: "100%" }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="time"
+                    label="Heure"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Veuillez renseigner l'heure.",
+                      },
+                    ]}
+                  >
+                    <TimePicker
+                      format="HH:mm"
+                      style={{ width: "100%" }}
+                      placeholder="HH:mm"
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isPending}
+                  style={{ boxShadow: "none" }}
+                  block
+                >
+                  Sauvegarder
+                </Button>
+              </Form.Item>
+            </Form>
+          </Flex>
+        }
       >
         <div style={{ maxWidth: 1400, margin: "auto" }}>
           <Alert
@@ -195,6 +258,8 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
                   Indiquez la date, l&apos;heure et marquez avec précision les
                   étudiants présents et absents
                 </div>
+                <div>P="Présent" A="Absent" J="Justifié"</div>
+                <div>Puis sauvegarder</div>
               </>
             }
             showIcon
@@ -202,109 +267,23 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
             style={{ marginBottom: 24 }}
           />
 
-          <Row gutter={[24, 24]}>
-            <Col span={24}>
-            <Card>
-                  <Form
-                    form={form}
-                    name="form_new-attendance-list"
-                    initialValues={{
-                      date: dayjs(),
-                    }}
-                    onFinish={onFinish}
-                    disabled={isPending}
-                    layout="vertical"
-                  >
-                    <Row gutter={[16, 16]}>
-                      <Col span={12}>
-                        <Form.Item
-                          name="date"
-                          label="Date de la séance"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Veuillez renseigner la date.",
-                            },
-                          ]}
-                        >
-                          <DatePicker
-                            format="DD/MM/YYYY"
-                            placeholder="DD/MM/YYYY"
-                            style={{ width: "100%" }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          name="time"
-                          label="Heure"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Veuillez renseigner l'heure.",
-                            },
-                          ]}
-                        >
-                          <TimePicker
-                            format="HH:mm"
-                            style={{ width: "100%" }}
-                            placeholder="HH:mm"
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Form.Item>
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        loading={isPending}
-                        style={{ boxShadow: "none" }}
-                        block
-                      >
-                        Sauvegarder
-                      </Button>
-                    </Form.Item>
-                  </Form>
-                </Card>
-            <Flex>
-                  <Tag color="success">
-                    {getAttendancePresentCount(attendanceItems)} Présence (s)
-                  </Tag>
-                  <Tag color="red">
-                    {getAttendanceAbsentCount(attendanceItems)} Absence (s)
-                  </Tag>
-                  <Tag color="warning">
-                    {getAttendanceJustifiedCount(attendanceItems)} Justification
-                    (s)
-                  </Tag>
-                </Flex>
-              <Card>
-                <ListAttendance
-                  items={attendanceItems}
-                  editRecordStatus={editAttendanceItemStatus}
-                />
-                
-              </Card>
-              
-            </Col>
-            <Col span={24}>
-              <div
-                style={{
-                  display: "flex",
-                  // background: colorBgContainer,
-                  padding: "24px 0",
-                }}
-              >
-                <Typography.Text type="secondary">
-                  © {new Date().getFullYear()} CI-UCBC. Tous droits réservés.
-                </Typography.Text>
-                <div className="flex-1" />
-                <Space>
-                  <Palette />
-                </Space>
-              </div>
-            </Col>
-          </Row>
+          <Flex style={{ marginBottom: 16 }} wrap={false}>
+            <Tag color="success">
+              {getAttendancePresentCount(attendanceItems)} Présence (s)
+            </Tag>
+            <Tag color="red">
+              {getAttendanceAbsentCount(attendanceItems)} Absence (s)
+            </Tag>
+            <Tag color="warning">
+              {getAttendanceJustifiedCount(attendanceItems)} Justification (s)
+            </Tag>
+          </Flex>
+          <Card>
+          <ListAttendance
+            items={attendanceItems}
+            editRecordStatus={editAttendanceItemStatus}
+          />
+          </Card>
         </div>
       </Drawer>
     </>

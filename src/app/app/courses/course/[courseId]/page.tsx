@@ -1,7 +1,7 @@
 "use client";
 
 import { Palette } from "@/components/palette";
-import { getCourseEnrollments, getPeriodEnrollments, getTaughtCours } from "@/lib/api";
+import { getCourseEnrollments,  getTaughtCours } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -18,6 +18,7 @@ import { parseAsStringEnum, useQueryState } from "nuqs";
 import { StudentCourseGrades } from "./_components/grades";
 import { CourseAttendancesList} from "./_components/attendances";
 import { CourseOverview } from "./_components/overview";
+import { DataFetchErrorResult } from "@/components/errorResult";
 
 export default function Page() {
   const {
@@ -54,8 +55,10 @@ export default function Page() {
     queryFn: ({queryKey})=> getCourseEnrollments(Number(queryKey[1])),
     enabled:!!courseId
   });
-console.log("Enrollments:",courseEnrollments)
 
+  if(isError || isErrorCourseEnrollments){
+    return <DataFetchErrorResult/>
+  }
 
   return (
     <Layout>

@@ -3,7 +3,13 @@
 import { DataFetchErrorResult } from "@/components/errorResult";
 import { Palette } from "@/components/palette";
 import { useYid } from "@/hooks/use-yid";
-import { getTeacher, getYearEnrollment, getYearProgressPercent } from "@/lib/api";
+import {
+  getTaughtCourses,
+  getTeacher,
+  getYearEnrollment,
+  getYearProgressPercent,
+  getYears,
+} from "@/lib/api";
 import { getMaritalStatusName, percentageFormatter } from "@/lib/utils";
 import { useSessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
@@ -28,26 +34,47 @@ export default function Page() {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  const { yid } = useYid();
-  const {user}=useSessionStore()
+  const { user } = useSessionStore();
+  const {yid} = useYid();
+    const router = useRouter();
 
-   const {
+  const {
     data: teacher,
-    isPending,
-    isError,
+    isPending: isPendingTeacher,
+    isError: isErrorTeacher,
   } = useQuery({
-    queryKey: ["teacher", `${user?.id}`],
-    queryFn: ({ queryKey }) => getTeacher(Number(queryKey[1])),
+    queryKey: ["teacher"],
+    queryFn: getTeacher,
     enabled: !!user?.id,
   });
 
-  const router = useRouter();
+   const {
+      data: years,
+      isPending:isPendingYears,
+      isError:isErrorYears,
+    } = useQuery({
+      queryKey: ["years"],
+      queryFn: getYears,
+    });
 
-  if (isError) {
+
+   const {
+      data: courses,
+      isPending: isPendingCourses,
+      isError: isErrorCourses,
+    } = useQuery({
+      queryKey: ["courses", `${yid}`],
+      queryFn: ({ queryKey }) => getTaughtCourses(Number(queryKey[1])),
+      enabled: !!yid,
+    });
+
+    const getCurrentYear=()=>{
+      return years?.find(y=>y.id===yid)
+    }
+
+  if (isErrorTeacher) {
     return <DataFetchErrorResult />;
   }
-
-  console.log("USER:", user)
 
   return (
     <Layout>
@@ -74,12 +101,90 @@ export default function Page() {
             </Typography.Title>
           </Space>
           <div className="flex-1" />
-          <Space>
-            {/* <Palette /> */}
-          </Space>
+          <Space>{/* <Palette /> */}</Space>
         </Layout.Header>
         <Flex vertical={true} gap={24}>
-         <Descriptions/>
+          <Row
+            gutter={[
+              { xs: 16, sm: 18, md: 24 },
+              { xs: 16, sm: 18, md: 24 },
+            ]}
+          >
+            <Col xs={24} md={18}>
+              <Row
+                gutter={[
+                  { xs: 16, sm: 18, md: 24 },
+                  { xs: 16, sm: 18, md: 24 },
+                ]}
+              >
+                 <Col xs={24} sm={12} md={8}>
+                  <Card>
+                    <Statistic
+                      loading={isPendingYears}
+                      title="Année"
+                     value={getCurrentYear()?.name || ""}
+                    />
+                  </Card>
+                </Col>
+                 <Col xs={24} sm={12} md={8}>
+                  <Card>
+                    <Flex justify="space-between" align="flex-end"><Statistic
+                      loading={isPendingCourses}
+                      title="Mes cours"
+                      value={courses?.length||0}
+                     
+                    />
+                    <Button
+                      type="link"
+                      onClick={() => router.push("/app/courses")}>
+                      Voir les cours
+                      </Button>
+                    </Flex>
+                  </Card>
+                </Col>
+                 <Col xs={24} sm={12} md={8}>
+                  <Card>
+                    <Statistic
+                      loading={isPendingTeacher}
+                      title="Mon titre"
+                      value={teacher?.academic_title || "N/A"}
+                    />
+                  </Card>
+                </Col>
+              </Row>
+            </Col>
+            <Col xs={24} md={6}>
+              <Card loading={isPendingTeacher}>
+                <Descriptions
+                  extra={<Button type="link" onClick={() => router.push("/app/profile")}>Gérer</Button>}
+                  title="Autres informations"
+                  column={1}
+                  items={[
+                    {
+                      key: "education_level",
+                      label: "Niveau d'éducation",
+                      children: teacher?.education_level || "",
+                    },
+                    {
+                      key: "field_of_study",
+                      label: "Domaine d'étude",
+                      children: teacher?.field_of_study || "",
+                    },
+                    {
+                      key: "academic_title",
+                      label: "Titre académique",
+                      children: teacher?.academic_title || "",
+                    },
+                    {
+                      key: "academic_grade",
+                      label: "Grade académique",
+                      children: teacher?.academic_grade || "",
+                    },
+                  ]}
+                />
+              </Card>
+            </Col>
+          </Row>
         </Flex>
         <Layout.Footer
           style={{

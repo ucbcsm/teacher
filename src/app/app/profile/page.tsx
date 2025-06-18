@@ -2,12 +2,8 @@
 
 import { DataFetchErrorResult } from "@/components/errorResult";
 import { Palette } from "@/components/palette";
-import { useYid } from "@/hooks/use-yid";
 import { getTeacher } from "@/lib/api";
-import {
-  getHSLColor,
-  getMaritalStatusName,
-} from "@/lib/utils";
+import { getHSLColor, getMaritalStatusName } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
   Alert,
@@ -15,6 +11,7 @@ import {
   Button,
   Card,
   Descriptions,
+  Divider,
   Flex,
   Form,
   Image,
@@ -32,7 +29,6 @@ export default function Page() {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  const { yid } = useYid();
   const { user } = useSessionStore();
   const router = useRouter();
 
@@ -41,8 +37,8 @@ export default function Page() {
     isPending,
     isError,
   } = useQuery({
-    queryKey: ["teacher", `${user?.id}`],
-    queryFn: ({ queryKey }) => getTeacher(Number(queryKey[1])),
+    queryKey: ["teacher", ],
+    queryFn:  getTeacher,
     enabled: !!user?.id,
   });
 
@@ -186,24 +182,65 @@ export default function Page() {
                   label: "Affiliation religieuse",
                   children: teacher?.religious_affiliation,
                 },
+               {
+                  key: "stranger",
+                  label: "Etranger?",
+                  children: teacher?.is_foreign_country_teacher
+                    ? "Oui"
+                    : "Non",
+                },
+              ]}
+            />
+            <Divider />
+            
+            <Descriptions
+              title="Études et titres académiques"
+              column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
+              items={[
+                {
+                  key: "education_level",
+                  label: "Niveau d'éducation",
+                  children: teacher?.education_level || "",
+                },
+                {
+                  key: "field_of_study",
+                  label: "Domaine d'étude",
+                  children: teacher?.field_of_study || "",
+                },
+                {
+                  key: "academic_title",
+                  label: "Titre académique",
+                  children: teacher?.academic_title || "",
+                },
+                {
+                  key: "academic_grade",
+                  label: "Grade académique",
+                  children: teacher?.academic_grade || "",
+                },
+              ]}
+            />
+            <Descriptions
+              title="Contacts"
+              column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
+              items={[
                 {
                   key: "email",
                   label: "Email",
                   children: teacher?.user.email || "",
                 },
                 {
-                  key: "phone",
+                  key: "phone_number_1",
                   label: "Téléphone 1",
                   children: teacher?.phone_number_1 || "",
                 },
                 {
-                  key: "phone",
+                  key: "phone_number_2",
                   label: "Téléphone 2",
                   children: teacher?.phone_number_2 || "",
                 },
               ]}
             />
-
+            <Divider />
             <Alert
               showIcon={false}
               type="error"

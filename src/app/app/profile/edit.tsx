@@ -9,10 +9,16 @@ import {
 import { countries } from "@/lib/data/countries";
 
 import { Teacher } from "@/types";
-import { CloseOutlined, EditOutlined, LockOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  EditOutlined,
+  LockOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Alert,
+  Avatar,
   Button,
   Checkbox,
   DatePicker,
@@ -60,6 +66,10 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
           params: {
             ...values,
             date_of_birth: dayjs(values.date_of_birth).format("YYYY-MM-DD"),
+            assigned_faculties:
+              teacher.assigned_faculties?.map((fac) => fac.id) || [],
+            assigned_departements:
+              teacher.assigned_departements?.map((dept) => dept.id) || [],
             institution_of_origin: values.is_permanent_teacher
               ? ""
               : values.institution_of_origin,
@@ -112,8 +122,8 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
       <Drawer
         open={open}
         title={
-          <div className="text-white">
-            Info enseignant:{" "}
+          <Space className="text-white">
+            <Avatar icon={<UserOutlined />} />
             <Typography.Text
               type="warning"
               style={{ textTransform: "uppercase" }}
@@ -121,12 +131,12 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
               {teacher?.user.first_name} {teacher?.user.last_name}{" "}
               {teacher?.user.surname}
             </Typography.Text>
-          </div>
+          </Space>
         }
         width="100%"
         closable={false}
         onClose={() => setOpen(false)}
-        destroyOnClose
+        destroyOnHidden
         styles={{ header: { background: colorPrimary } }}
         extra={
           <Space>
@@ -198,20 +208,13 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
                 style={{ marginBottom: 0 }}
               >
                 <Input
-                  variant="filled"
+                  variant="borderless"
                   style={{ width: 120 }}
                   disabled={!editMatricule}
                 />
               </Form.Item>
             }
             style={{ marginTop: 8 }}
-            action={
-              <Button
-                type="link"
-                icon={!editMatricule ? <EditOutlined /> : <LockOutlined />}
-                onClick={() => setEditMatricule((prev) => !prev)}
-              />
-            }
           />
           <Form.Item
             label="Type de personnel"
@@ -224,6 +227,7 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
                 { value: true, label: "Permanent" },
                 { value: false, label: "Visiteur" },
               ]}
+              disabled
             />
           </Form.Item>
           {is_permanent_teacher === false && (
@@ -232,7 +236,11 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
               label="Origine"
               rules={[{ required: true }]}
             >
-              <Input placeholder="Institution d'origine" />
+              <Input
+                placeholder="Institution d'origine"
+                disabled
+                variant="borderless"
+              />
             </Form.Item>
           )}
           <Divider orientation="left" orientationMargin={0}>
@@ -293,7 +301,7 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
             />
           </Form.Item>
           <Form.Item
-            label="Est-il étranger?"
+            label="Êtes-vous étranger?"
             name="is_foreign_country_teacher"
             valuePropName="checked"
           >
@@ -367,7 +375,7 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
 
           <Divider orientation="left" orientationMargin={0}>
             <Typography.Title level={3}>
-              Etudes et titres académiques
+              Études et titres académiques
             </Typography.Title>
           </Divider>
           <Form.Item

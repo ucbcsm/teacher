@@ -15,8 +15,8 @@ export async function getTeachersByFaculty(facultyId: number) {
   return res.data.results as Teacher[];
 }
 
-export async function getTeacher(id: number) {
-  const res = await api.get(`/teacher/${id}/`);
+export async function getTeacher() {
+  const res = await api.get(`/teacher/current-logged-teacher/`);
   return res.data as Teacher;
 }
 

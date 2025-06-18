@@ -1,7 +1,7 @@
 "use client";
 
 import { Palette } from "@/components/palette";
-import { getPeriodEnrollments, getTaughtCours } from "@/lib/api";
+import { getCourseEnrollments, getPeriodEnrollments, getTaughtCours } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -16,7 +16,7 @@ import {
 import { useParams } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { StudentCourseGrades } from "./_components/grades";
-import { StudentCourseAttendances } from "./_components/attendances";
+import { CourseAttendancesList} from "./_components/attendances";
 import { CourseOverview } from "./_components/overview";
 
 export default function Page() {
@@ -46,21 +46,16 @@ export default function Page() {
   });
 
   const {
-    data: periodEnrollments,
-    isPending: isPendingPeriodEnrollements,
-    isError: isErrorPeriodEnrollments,
+    data: courseEnrollments,
+    isPending: isPendingCourseEnrollements,
+    isError: isErrorCourseEnrollments,
   } = useQuery({
-    queryKey: ["period_enrollments"],
-    queryFn: getPeriodEnrollments,
+    queryKey: ["course_enrollments", courseId],
+    queryFn: ({queryKey})=> getCourseEnrollments(Number(queryKey[1])),
+    enabled:!!courseId
   });
+console.log("Enrollments:",courseEnrollments)
 
-  const checkPeriodEnrollmentInEnrollments = () => {
-    const periodEnrollement = periodEnrollments?.find(
-      (p) => p.period.id === course?.period?.id
-    );
-
-    return periodEnrollement;
-  };
 
   return (
     <Layout>
@@ -82,7 +77,7 @@ export default function Page() {
           }}
         >
           <Space>
-            {!isPending || !isPendingPeriodEnrollements ? (
+            {!isPending || !isPendingCourseEnrollements ? (
               <Typography.Title level={3} style={{ marginBottom: 0 }}>
                 Cours / {course?.available_course.name}
               </Typography.Title>
@@ -95,7 +90,7 @@ export default function Page() {
           <div className="flex-1" />
           <Space>{/* <Palette /> */}</Space>
         </Layout.Header>
-        <Card loading={isPending || isPendingPeriodEnrollements}>
+        <Card loading={isPending || isPendingCourseEnrollements}>
           <Tabs
             activeKey={tab}
             defaultActiveKey={tab}
@@ -123,9 +118,9 @@ export default function Page() {
                 label: "Présences",
                 children: (
                   <>
-                    <StudentCourseAttendances
+                    <CourseAttendancesList
                       taughtCourse={course!}
-                      periodEnrollment={checkPeriodEnrollmentInEnrollments()}
+                      courseEnrollments={courseEnrollments}
                     />
                   </>
                 ),

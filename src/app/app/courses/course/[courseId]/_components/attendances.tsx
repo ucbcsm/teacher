@@ -28,28 +28,24 @@ import {
   getAttendanceJustifiedCount,
 } from "@/lib/api";
 import dayjs from "dayjs";
-import { PeriodEnrollment, TaughtCourse } from "@/types";
+import { CourseEnrollment, TaughtCourse } from "@/types";
 import { useParams } from "next/navigation";
+import { NewAttendanceListForm } from "./forms/new";
 
-type StudentCourseAttendancesProps = {
+type CourseAttendancesListProps = {
   taughtCourse?: TaughtCourse;
-  periodEnrollment?: PeriodEnrollment;
+  courseEnrollments?: CourseEnrollment[];
 };
 
-export const StudentCourseAttendances: FC<StudentCourseAttendancesProps> = ({
+export const CourseAttendancesList: FC<CourseAttendancesListProps> = ({
   taughtCourse,
-  periodEnrollment,
+  courseEnrollments,
 }) => {
   const { courseId } = useParams();
   const {
     token: { colorTextDisabled },
   } = theme.useToken();
-  const { data, isPending, isError } = useQuery({
-    queryKey: ["attendances", `${taughtCourse?.id}`, `${periodEnrollment?.id}`],
-    queryFn: ({ queryKey }) =>
-      getStudentCourseAttendances(Number(queryKey[1]), Number(queryKey[2])),
-    enabled: !!taughtCourse?.id && !!periodEnrollment?.id,
-  });
+
 
   const {
     data: attendances,
@@ -61,28 +57,6 @@ export const StudentCourseAttendances: FC<StudentCourseAttendancesProps> = ({
     enabled: !!courseId,
   });
 
-  const getPresentsCount = () => {
-    return (
-      data?.filter(
-        (item) => item.student_attendance_status[0].status === "present"
-      ).length || 0
-    );
-  };
-
-  const getAbsentsCount = () => {
-    return (
-      data?.filter(
-        (item) => item.student_attendance_status[0].status !== "present"
-      ).length || 0
-    );
-  };
-
-  const getPresentsPercent = () => {
-    return data?.length! > 0
-      ? Math.round((getPresentsCount() / data?.length!) * 100)
-      : 0;
-  };
-
   return (
     <>
       <Typography.Title level={5}>Listes des présences </Typography.Title>
@@ -93,7 +67,7 @@ export const StudentCourseAttendances: FC<StudentCourseAttendancesProps> = ({
             title="Séances"
             value={attendances?.length || 0}
           />
-          <Button type="primary" style={{boxShadow:"none"}}>Faire l&apos;appel</Button>
+          <NewAttendanceListForm course={taughtCourse} courseEnrollements={courseEnrollments}/>
         </Flex>
       </Card>
 

@@ -29,7 +29,7 @@ import { useState } from "react";
 import { useYid } from "@/hooks/use-yid";
 import { logout } from "@/lib/api/auth";
 
-export default function StudentLayout({
+export default function TeacherLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const {

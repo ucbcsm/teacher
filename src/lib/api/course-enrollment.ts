@@ -2,17 +2,12 @@ import { CourseEnrollment } from "@/types";
 import api from "../fetcher";
 import dayjs from "dayjs";
 
-export async function getCourseEnrollments() {
-  const res = await api.get(`/student/course-enrollment/`);
-  return res.data.results as CourseEnrollment[];
+export async function getCourseEnrollments(courseId: number) {
+  const res = await api.get(
+    `/faculty/course-enrollment-from-faculty/?course__id=${courseId}`
+  );
+  return res.data as CourseEnrollment[];
 }
-
-// export async function getCourseEnrollments(courseId: number) {
-//   const res = await api.get(
-//     `/faculty/course-enrollment-from-faculty/?course__id=${courseId}`
-//   );
-//   return res.data as CourseEnrollment[];
-// }
 
 export async function createCourseEnrollment(data: {
   payload: {

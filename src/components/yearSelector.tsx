@@ -200,7 +200,7 @@ export function YearSelector() {
           value={yid}
           variant="filled"
           options={getAsOptions()}
-          style={{ width: 136 }}
+          style={{ width: 108 }}
           onSelect={(value) => {
             setYid(value);
             window.location.reload();

@@ -127,7 +127,7 @@ export default function Page() {
           <Space>
             {!isPendingCourses ? (
               <Typography.Title level={3} style={{ marginBottom: 0 }}>
-                Cours
+                Mes cours
               </Typography.Title>
             ) : (
               <Form>

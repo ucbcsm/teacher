@@ -1,7 +1,11 @@
 "use client";
 
 import { AttendanceListItem } from "@/types";
-import { Radio, Space } from "antd";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
+import { Space, Tag, theme } from "antd";
 import { FC } from "react";
 
 type AttendanceControllerProps = {
@@ -18,21 +22,36 @@ export const AttendanceController: FC<AttendanceControllerProps> = ({
   editRecordStatus,
   index,
 }) => {
+  const {
+    token: { colorTextDisabled, colorSuccess, colorError },
+  } = theme.useToken();
   return (
-      <Radio.Group
-        options={[
-          { value: "present", label: "P" },
-          { value: "absent", label: "A",  },
-          { value: "justified", label: "J" },
-        ]}
-        onChange={(e) => {
-          editRecordStatus(e.target.value, index);
+    <Space size={0}>
+      <Tag
+        icon={<CheckCircleOutlined />}
+        color={record.status === "present" ? "success" : "default"}
+        onClick={() => editRecordStatus("present", index)}
+        bordered={false}
+        style={{
+          cursor: "pointer",
+         
+          color: record.status !== "present" ? colorTextDisabled : colorSuccess,
+          background: record.status !== "present"?"transparent":""
         }}
-        defaultValue={record.status}
-        value={record.status}
-        optionType="button"
-        buttonStyle="solid"
-        size="small"
-      /> 
+      />
+      <Tag
+        icon={<CloseCircleOutlined />}
+        color={record.status === "absent" ? "error" : "default"}
+        onClick={() => editRecordStatus("absent", index)}
+        bordered={false}
+        style={{
+          cursor: "pointer",
+         
+          marginRight: 0,
+          color: record.status !== "absent" ? colorTextDisabled : colorError,
+          background: record.status !== "absent"?"transparent":""
+        }}
+      />
+    </Space>
   );
 };

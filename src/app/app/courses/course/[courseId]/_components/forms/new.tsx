@@ -15,32 +15,30 @@ import {
   Space,
   theme,
   DatePicker,
-  Descriptions,
   Tag,
   TimePicker,
-  Statistic,
-  Progress,
-  Typography,
 } from "antd";
 import { parseAsBoolean, useQueryState } from "nuqs";
-import { BulbOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  BulbOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  CloseOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { AttendanceListItem, CourseEnrollment, TaughtCourse } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createAttendanceList,
   getAttendanceAbsentCount,
-  getAttendanceAbsentPercentage,
   getAttendanceItemsFromCourseEnrollments,
-  getAttendanceJustifiedCount,
-  getAttendanceJustifiedPercentage,
   getAttendancePresentCount,
-  getAttendancePresentPercentage,
 } from "@/lib/api";
 import { useParams } from "next/navigation";
 import dayjs from "dayjs";
 import { ListAttendance } from "./list";
 import { useSessionStore } from "@/store";
-import { Palette } from "@/components/palette";
 
 type NewAttendanceListFormProps = {
   course?: TaughtCourse;
@@ -134,7 +132,6 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
     <>
       {contextHolder}
       <Button
-        icon={<PlusOutlined />}
         type="primary"
         style={{ boxShadow: "none" }}
         variant="dashed"
@@ -193,6 +190,7 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
               onFinish={onFinish}
               disabled={isPending}
               layout="horizontal"
+              style={{ width: "100%" }}
             >
               <Row gutter={[16, 16]}>
                 <Col span={12}>
@@ -231,18 +229,20 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
                     />
                   </Form.Item>
                 </Col>
+                <Col span={24}>
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={isPending}
+                      style={{ boxShadow: "none" }}
+                      block
+                    >
+                      Sauvegarder
+                    </Button>
+                  </Form.Item>
+                </Col>
               </Row>
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={isPending}
-                  style={{ boxShadow: "none" }}
-                  block
-                >
-                  Sauvegarder
-                </Button>
-              </Form.Item>
             </Form>
           </Flex>
         }
@@ -255,35 +255,44 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
             description={
               <>
                 <div>
-                  Indiquez la date, l&apos;heure et marquez avec précision les
+                  - Indiquez la date, l&apos;heure et marquez avec précision les
                   étudiants présents et absents
                 </div>
-                <div>P="Présent" A="Absent" J="Justifié"</div>
-                <div>Puis sauvegarder</div>
+                <div>
+                  - Présent ={" "}
+                  <Tag
+                    color="success"
+                    icon={<CheckCircleOutlined />}
+                    bordered={false}
+                  />{" "}
+                  Absent ={" "}
+                  <Tag
+                    color="red"
+                    icon={<CloseCircleOutlined />}
+                    bordered={false}
+                  />
+                 
+                </div>
+                <div>- Puis sauvegarder</div>
               </>
             }
             showIcon
             closable
             style={{ marginBottom: 24 }}
           />
-
-          <Flex style={{ marginBottom: 16 }} wrap={false}>
+          <Space style={{ marginBottom: 16 }} wrap={true}>
             <Tag color="success">
               {getAttendancePresentCount(attendanceItems)} Présence (s)
             </Tag>
             <Tag color="red">
               {getAttendanceAbsentCount(attendanceItems)} Absence (s)
             </Tag>
-            <Tag color="warning">
-              {getAttendanceJustifiedCount(attendanceItems)} Justification (s)
-            </Tag>
-          </Flex>
-          <Card>
+          </Space>
+
           <ListAttendance
             items={attendanceItems}
             editRecordStatus={editAttendanceItemStatus}
           />
-          </Card>
         </div>
       </Drawer>
     </>

@@ -109,7 +109,7 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
           messageApi.success("Liste de présence créée avec succès !");
           setNewAttendance(false);
           form.resetFields();
-          setAttendanceItems([]);
+          setAttendanceItems(getAttendanceItemsFromCourseEnrollments(courseEnrollements!));
         },
         onError: () => {
           messageApi.error(
@@ -229,8 +229,9 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
                     />
                   </Form.Item>
                 </Col>
-                <Col span={24}>
-                  <Form.Item>
+                
+              </Row>
+              <Form.Item>
                     <Button
                       type="primary"
                       htmlType="submit"
@@ -241,8 +242,6 @@ export const NewAttendanceListForm: FC<NewAttendanceListFormProps> = ({
                       Sauvegarder
                     </Button>
                   </Form.Item>
-                </Col>
-              </Row>
             </Form>
           </Flex>
         }

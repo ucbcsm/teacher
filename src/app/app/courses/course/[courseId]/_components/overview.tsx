@@ -34,12 +34,6 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
   }
   return (
     <>
-      {/* <Space>
-        
-        <Typography.Title level={5}>
-          Vue d&apos;ensemble du cours
-        </Typography.Title>
-      </Space> */}
       <Row gutter={[24, 24]}>
         <Col xs={24} sm={24} md={6}>
         <Card variant="borderless">
@@ -61,7 +55,7 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
                   <BookOutlined /> <span>Vue d&apos;ensemble du cours</span>
                 </Space>
               }
-              column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 3, xxl: 3 }}
+              column={{ xs: 1, sm: 1, md: 2, lg: 2, xl: 3, xxl: 3 }}
               items={[
                 {
                   key: "name",

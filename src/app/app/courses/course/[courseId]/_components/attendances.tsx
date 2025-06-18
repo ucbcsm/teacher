@@ -6,6 +6,7 @@ import {
   Dropdown,
   Flex,
   List,
+  Skeleton,
   Space,
   Statistic,
   Tag,
@@ -154,10 +155,11 @@ export const CourseAttendancesList: FC<CourseAttendancesListProps> = ({
             title="Séances"
             value={attendances?.length || 0}
           />
-          <NewAttendanceListForm
+
+          {!isPendingAttendances?<NewAttendanceListForm
             course={taughtCourse}
             courseEnrollements={courseEnrollments}
-          />
+          />:<Skeleton.Button active/>}
         </Flex>
       </Card>
 

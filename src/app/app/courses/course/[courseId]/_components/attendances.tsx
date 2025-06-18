@@ -67,7 +67,7 @@ export const StudentCourseAttendances: FC<StudentCourseAttendancesProps> = ({
 
   return (
     <>
-      <Typography.Title level={5}>Mes présences au cours </Typography.Title>
+      <Typography.Title level={5}>Listes des présences </Typography.Title>
       <Card variant="borderless">
         <div className=" ">
           <Statistic
@@ -149,7 +149,6 @@ export const StudentCourseAttendances: FC<StudentCourseAttendancesProps> = ({
         footer={
           <Flex justify="space-between">
             <Typography.Text strong>Total</Typography.Text>
-
             <Typography.Text>
               <Tag color="green" bordered={false} style={{fontWeight:"bold"}}>
                 {getPresentsCount()} Présent(s)

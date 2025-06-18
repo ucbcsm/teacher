@@ -105,6 +105,7 @@ export default function Page() {
   } = useQuery({
     queryKey: ["courses", `${yid}`],
     queryFn: ({ queryKey }) => getTaughtCourses(Number(queryKey[1])),
+    enabled:!!yid
   });
 
   return (

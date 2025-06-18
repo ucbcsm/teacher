@@ -1,7 +1,7 @@
 'use client'
 
 import React from "react";
-import {  Flex, List, Space, Typography } from "antd";
+import {  Button, Card, Flex, List, Space, Statistic, Typography } from "antd";
 import {
   CheckCircleOutlined,
   FileTextOutlined,
@@ -11,21 +11,21 @@ const gradesData = {
   grades: [
     {
       type: "TD/TP",
-      label: "TD (Travaux Dirigés)",
+      label: "Moyenne TD & TP",
       score: 3.5,
       max: 5,
       date: "2025-03-12",
     },
     {
       type: "TD/TP",
-      label: "TP (Travaux Pratiques)",
+      label: "Moyenne Interro",
       score: 2.5,
       max: 5,
       date: "2025-04-07",
     },
     {
       type: "Examen",
-      label: "Examen final",
+      label: "Moyenne examen",
       score: 7,
       max: 10,
       date: "2025-05-21",
@@ -45,14 +45,26 @@ export const StudentCourseGrades=()=> {
   );
 
   return (
+    <>
+    <Typography.Title level={5}>Notes des étudiants </Typography.Title>
+          <Card variant="borderless" >
+            <Flex justify="space-between" align="flex-end">
+              {/* <Statistic
+                loading={false}
+                title="Moyenne"
+                value={0}
+              /> */}
+              <Button type="primary" style={{boxShadow:"none"}}>Saisir les notes</Button>
+            </Flex>
+          </Card>
     <List
       className="mt-7"
-      header={
-        <Flex justify="space-between">
-          <Typography.Text strong>Type</Typography.Text>
-          <Typography.Text strong>Note</Typography.Text>
-        </Flex>
-      }
+      // header={
+      //   <Flex justify="space-between">
+      //     <Typography.Text strong>Type</Typography.Text>
+      //     <Typography.Text strong>Note</Typography.Text>
+      //   </Flex>
+      // }
       dataSource={grades}
       renderItem={(item) => (
         <List.Item key={item.label}>
@@ -74,7 +86,7 @@ export const StudentCourseGrades=()=> {
       )}
       footer={
         <Flex justify="space-between">
-          <Typography.Text strong>Total</Typography.Text>
+          <Typography.Text strong>Moyenne totale</Typography.Text>
 
           <Typography.Text strong>
             {total.score} / {total.max}
@@ -82,5 +94,6 @@ export const StudentCourseGrades=()=> {
         </Flex>
       }
     />
+    </>
   );
 }

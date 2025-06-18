@@ -182,35 +182,7 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
           {/* <Card > */}
           <Space direction="vertical" style={{ width: "100%" }}>
            
-            <Typography.Title level={5}>Enseignants</Typography.Title>
-            <div>
-              <Typography.Text type="secondary">
-                Principal
-              </Typography.Text>
-              <List
-                dataSource={[{ ...course?.teacher }]}
-                renderItem={(item, index) => (
-                  <List.Item key={item.id}>
-                    <List.Item.Meta
-                      avatar={
-                        <Avatar
-                          style={{
-                            backgroundColor: getHSLColor(
-                              `${item?.user?.first_name} ${item.user?.last_name} ${item.user?.surname}`
-                            ),
-                          }}
-                        >
-                          {item.user?.first_name?.charAt(0).toUpperCase()}
-                          {item.user?.last_name?.charAt(0).toUpperCase()}
-                        </Avatar>
-                      }
-                      title={`${item?.user?.first_name} ${item?.user?.last_name} ${item?.user?.surname}`}
-                      description={item.academic_title}
-                    />
-                  </List.Item>
-                )}
-              />
-            </div>
+              
             <div>
               <Typography.Text type="secondary">Assistants</Typography.Text>
               <List

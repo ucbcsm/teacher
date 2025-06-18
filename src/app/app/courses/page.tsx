@@ -53,14 +53,16 @@ const CourseListItem: FC<CourseListItemProps> = ({ item }) => {
               menu={{
                 items: [
                   {
-                    key: "unregister",
-                    label: " Se désinscrire",
-                    danger: true,
+                    key: "attendances",
+                    label: "Présences",
+                  },
+                  {
+                    key: "assessments",
+                    label: "Notes",
                   },
                 ],
                 onClick: ({ key }) => {
-                  if (key === "unregister") {
-                  }
+                  router.push(`/app/courses/course/${item.id}/?tab=${key}`);
                 },
               }}
             >

@@ -1,38 +1,25 @@
 "use client";
 
 import { Palette } from "@/components/palette";
-import { useYid } from "@/hooks/use-yid";
 import {
-  formatAdmissionTestResultsForEdition,
-  formatApplicationDocumentsForEdition,
-  formatEnrollmentQuestionResponseForEdition,
-  parseLanguages,
-  updateStudentInfo,
+  getCurrentDepartmentsAsOptions,
+  getCurrentFacultiesAsOptions,
+  updateTeacher,
 } from "@/lib/api";
 import { countries } from "@/lib/data/countries";
-import { Enrollment } from "@/types";
-import {
-  CloseOutlined,
-  DeleteOutlined,
-  EditOutlined,
-  LockOutlined,
-  PlusCircleOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+
+import { Teacher } from "@/types";
+import { CloseOutlined, EditOutlined, LockOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Alert,
-  Avatar,
-  Badge,
   Button,
   Checkbox,
   DatePicker,
   Divider,
   Drawer,
-  Flex,
   Form,
   Input,
-  InputNumber,
   message,
   Radio,
   Select,
@@ -43,73 +30,65 @@ import {
 import dayjs from "dayjs";
 import { FC, useState } from "react";
 
-type EditStudentProfileFormProps = {
-  data?: Enrollment;
+type EditTeacherProfileFormProps = {
+  teacher?: Teacher;
 };
 
-export const EditStudentProfileForm: FC<EditStudentProfileFormProps> = ({
-  data,
+export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
+  teacher,
 }) => {
   const {
     token: { colorPrimary },
   } = theme.useToken();
   const [open, setOpen] = useState<boolean>(false);
-  const { yid } = useYid();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
+  const is_permanent_teacher = Form.useWatch("is_permanent_teacher", form);
   const [editMatricule, setEditMatricule] = useState<boolean>(false);
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: updateStudentInfo,
+    mutationFn: updateTeacher,
   });
 
   const onFinish = (values: any) => {
-    if (!data) {
+    if (!teacher) {
       messageApi.error("Aucune donnée disponible pour la mise à jour.");
     } else {
       mutateAsync(
         {
-          id: Number(data?.common_enrollment_infos.id),
+          id: Number(teacher.id),
           params: {
             ...values,
+            date_of_birth: dayjs(values.date_of_birth).format("YYYY-MM-DD"),
+            institution_of_origin: values.is_permanent_teacher
+              ? ""
+              : values.institution_of_origin,
             user: {
-              id: data?.user.id,
+              id: teacher?.user.id,
               first_name: values.first_name,
               last_name: values.last_name,
               surname: values.surname,
               email: values.email,
-              avatar: data?.user.avatar,
+              avatar: teacher?.user.avatar,
               matricule: values.matricule,
-              pending_avatar: data?.user.pending_avatar,
+              pending_avatar: teacher?.user.pending_avatar,
+              is_permanent_teacher: values.is_permanent_teacher,
             },
-            application_documents: formatApplicationDocumentsForEdition(
-              data?.common_enrollment_infos.application_documents
-            ),
-            enrollment_question_response:
-              formatEnrollmentQuestionResponseForEdition(
-                data?.common_enrollment_infos.enrollment_question_response
-              ),
-
-            admission_test_result: formatAdmissionTestResultsForEdition(
-              data?.common_enrollment_infos.admission_test_result
-            ),
           },
         },
         {
           onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["teachers"] });
             queryClient.invalidateQueries({
-              queryKey: ["year_enrollments", `${yid}`],
+              queryKey: ["teacher", `${teacher.id}`],
             });
-            queryClient.invalidateQueries({
-              queryKey: ["enrollment", `${data.id}`],
-            });
-            messageApi.success("Profil étudiant mise à jour avec succès.");
+            messageApi.success("Profil enseignant mise à jour avec succès.");
             setEditMatricule(false);
             setOpen(false);
           },
           onError: () => {
             messageApi.error(
-              "Une erreur est survenue lors de la mise à jour du profil étudiant."
+              "Une erreur est survenue lors de la mise à jour du profil enseignant."
             );
           },
         }
@@ -133,24 +112,21 @@ export const EditStudentProfileForm: FC<EditStudentProfileFormProps> = ({
       <Drawer
         open={open}
         title={
-          <Space className="text-white">
-            <Avatar
-            icon={ <UserOutlined/>}
-            />
-           
+          <div className="text-white">
+            Info enseignant:{" "}
             <Typography.Text
               type="warning"
               style={{ textTransform: "uppercase" }}
             >
-              {data?.user.first_name} {data?.user.last_name}{" "}
-              {data?.user.surname}
+              {teacher?.user.first_name} {teacher?.user.last_name}{" "}
+              {teacher?.user.surname}
             </Typography.Text>
-          </Space>
+          </div>
         }
         width="100%"
         closable={false}
         onClose={() => setOpen(false)}
-        destroyOnHidden
+        destroyOnClose
         styles={{ header: { background: colorPrimary } }}
         extra={
           <Space>
@@ -194,16 +170,16 @@ export const EditStudentProfileForm: FC<EditStudentProfileFormProps> = ({
           form={form}
           name="form_in_drawer"
           initialValues={{
-            ...data?.common_enrollment_infos,
-            ...data?.user,
-            date_of_birth: dayjs(data?.common_enrollment_infos.date_of_birth),
-            spoken_languages: parseLanguages(
-              data?.common_enrollment_infos.spoken_language!
+            ...teacher,
+            ...teacher?.user,
+            assigned_departements: teacher?.assigned_departements?.map(
+              (dept) => dept.id
             ),
-            year_of_diploma_obtained: dayjs(
-              `${data?.common_enrollment_infos.year_of_diploma_obtained}`,
-              "YYYY"
+            assigned_faculties: teacher?.assigned_faculties?.map(
+              (fac) => fac.id
             ),
+            is_permanent_teacher: teacher?.user.is_permanent_teacher,
+            date_of_birth: dayjs(`${teacher?.date_of_birth}`, "YYYY-MM-DD"),
           }}
           onFinish={onFinish}
           disabled={isPending}
@@ -211,7 +187,7 @@ export const EditStudentProfileForm: FC<EditStudentProfileFormProps> = ({
         >
           <Alert
             showIcon
-            message="Identifiant académique"
+            message="Identifiant administratif"
             type="info"
             description={
               <Form.Item
@@ -221,14 +197,48 @@ export const EditStudentProfileForm: FC<EditStudentProfileFormProps> = ({
                 status="error"
                 style={{ marginBottom: 0 }}
               >
-                <Input variant="filled" style={{ width: 120 }} disabled />
+                <Input
+                  variant="filled"
+                  style={{ width: 120 }}
+                  disabled={!editMatricule}
+                />
               </Form.Item>
             }
             style={{ marginTop: 8 }}
+            action={
+              <Button
+                type="link"
+                icon={!editMatricule ? <EditOutlined /> : <LockOutlined />}
+                onClick={() => setEditMatricule((prev) => !prev)}
+              />
+            }
           />
+          <Form.Item
+            label="Type de personnel"
+            name="is_permanent_teacher"
+            rules={[{ required: true }]}
+            style={{ marginTop: 24 }}
+          >
+            <Radio.Group
+              options={[
+                { value: true, label: "Permanent" },
+                { value: false, label: "Visiteur" },
+              ]}
+            />
+          </Form.Item>
+          {is_permanent_teacher === false && (
+            <Form.Item
+              name="institution_of_origin"
+              label="Origine"
+              rules={[{ required: true }]}
+            >
+              <Input placeholder="Institution d'origine" />
+            </Form.Item>
+          )}
           <Divider orientation="left" orientationMargin={0}>
             <Typography.Title level={3}>Identité</Typography.Title>
           </Divider>
+
           <Form.Item label="Nom" name="first_name" rules={[{ required: true }]}>
             <Input placeholder="Nom" />
           </Form.Item>
@@ -269,13 +279,6 @@ export const EditStudentProfileForm: FC<EditStudentProfileFormProps> = ({
             />
           </Form.Item>
           <Form.Item
-            label="Nationalité"
-            name="nationality"
-            rules={[{ required: true }]}
-          >
-            <Select placeholder="Nationalité" options={countries} showSearch />
-          </Form.Item>
-          <Form.Item
             label="État civil"
             name="marital_status"
             rules={[{ required: true }]}
@@ -288,6 +291,34 @@ export const EditStudentProfileForm: FC<EditStudentProfileFormProps> = ({
                 { value: "widowed", label: "Veuf(ve)" },
               ]}
             />
+          </Form.Item>
+          <Form.Item
+            label="Est-il étranger?"
+            name="is_foreign_country_teacher"
+            valuePropName="checked"
+          >
+            <Checkbox />
+          </Form.Item>
+          <Form.Item
+            label="Nationalité"
+            name="nationality"
+            rules={[{ required: true }]}
+          >
+            <Select placeholder="Nationalité" options={countries} showSearch />
+          </Form.Item>
+          <Form.Item
+            label="Ville ou Térritoire"
+            name="city_or_territory"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder="Ville ou Térritoire" />
+          </Form.Item>
+          <Form.Item
+            label="Adresse"
+            name="address"
+            rules={[{ required: true }]}
+          >
+            <Input.TextArea placeholder="Quartier ou Avenue et No" />
           </Form.Item>
           <Form.Item
             label="Affiliation religieuse"
@@ -308,72 +339,7 @@ export const EditStudentProfileForm: FC<EditStudentProfileFormProps> = ({
               ]}
             />
           </Form.Item>
-          <Typography.Text>Langues parlées</Typography.Text>
-          <Form.List
-            name={["spoken_languages"]}
-            rules={[
-              {
-                validator(_, value) {
-                  if (!value?.length) {
-                    return Promise.reject(
-                      new Error("Ajouter au moins une langue")
-                    );
-                  }
-                  return Promise.resolve();
-                },
-              },
-            ]}
-          >
-            {(fields, { add, remove }, { errors }) => (
-              <div className="pt-2">
-                {fields.map(({ key, name, ...restField }, index) => (
-                  <div className="" key={key}>
-                    <Flex gap={16}>
-                      <Form.Item
-                        {...restField}
-                        name={[name, "language"]}
-                        label={`Langue ${index + 1}`}
-                        rules={[
-                          {
-                            required: true,
-                          },
-                        ]}
-                        style={{ flex: 1 }}
-                      >
-                        <Input placeholder={`Langue parlée ${index + 1}`} />
-                      </Form.Item>
 
-                      <Button
-                        danger
-                        type="text"
-                        onClick={() => remove(name)}
-                        icon={<CloseOutlined />}
-                        style={{ boxShadow: "none" }}
-                      />
-                    </Flex>
-                  </div>
-                ))}
-                {errors.map((Error) => (
-                  <Typography.Text type="danger">{Error}</Typography.Text>
-                ))}
-                <Form.Item style={{}}>
-                  <Button
-                    type="link"
-                    onClick={() => add()}
-                    icon={<PlusCircleOutlined />}
-                    block
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    Ajouter une langue parlée
-                  </Button>
-                </Form.Item>
-              </div>
-            )}
-          </Form.List>
           <Divider orientation="left" orientationMargin={0}>
             <Typography.Title level={3}>Contacts</Typography.Title>
           </Divider>
@@ -398,276 +364,189 @@ export const EditStudentProfileForm: FC<EditStudentProfileFormProps> = ({
           >
             <Input placeholder="Numéro de téléphone 2" />
           </Form.Item>
-          <Divider orientation="left" orientationMargin={0}>
-            <Typography.Title level={3}>Parents</Typography.Title>
-          </Divider>
-          <Form.Item
-            label="Nom du père"
-            name="father_name"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="Nom du père" />
-          </Form.Item>
-          <Form.Item
-            label="Nom de la mère"
-            name="mother_name"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="Nom de la mère" />
-          </Form.Item>
-          <Form.Item
-            label="Téléphone du père"
-            name="father_phone_number"
-            rules={[]}
-          >
-            <Input placeholder="Téléphone du père" />
-          </Form.Item>
-          <Form.Item
-            label="Téléphone de la mère"
-            name="mother_phone_number"
-            rules={[]}
-          >
-            <Input placeholder="Téléphone de la mère" />
-          </Form.Item>
+
           <Divider orientation="left" orientationMargin={0}>
             <Typography.Title level={3}>
-              Origine de l&apos;étudiant
+              Etudes et titres académiques
             </Typography.Title>
           </Divider>
           <Form.Item
-            label="Pays d'origine"
-            name="country_of_origin"
+            label="Niveau d'éducation"
+            name="education_level"
             rules={[{ required: true }]}
           >
             <Select
-              placeholder="Pays d'origine"
-              options={countries}
-              showSearch
+              placeholder="Niveau d'éducation"
+              options={[
+                { value: "Licence", label: "Licence" },
+                { value: "Master", label: "Master" },
+                { value: "Doctorat", label: "Doctorat" },
+              ]}
             />
           </Form.Item>
           <Form.Item
-            label="Province d'origine"
-            name="province_of_origin"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="Province d'origine" />
-          </Form.Item>
-          <Form.Item
-            label="Ville ou Territoire d'origine"
-            name="territory_or_municipality_of_origin"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="Ville ou Territoire d'origine" />
-          </Form.Item>
-          <Form.Item
-            label="Êtes-vous étranger?"
-            name="is_foreign_registration"
-            valuePropName="checked"
-          >
-            <Checkbox/>
-          </Form.Item>
-
-          <Divider orientation="left" orientationMargin={0}>
-            <Typography.Title level={3}>Adresse actuelle</Typography.Title>
-          </Divider>
-          <Form.Item
-            label="Ville actuelle"
-            name="current_city"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="Ville actuelle" />
-          </Form.Item>
-          <Form.Item
-            label="Municipalité actuelle"
-            name="current_municipality"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="Municipalité actuelle" />
-          </Form.Item>
-          <Form.Item
-            label="Adresse actuelle"
-            name="current_neighborhood"
-            rules={[{ required: true }]}
-          >
-            <Input.TextArea placeholder="Quartier ou Avenue et No" />
-          </Form.Item>
-
-          <Divider orientation="left" orientationMargin={0}>
-            <Typography.Title level={3}>Études secondaires</Typography.Title>
-          </Divider>
-
-          <Form.Item
-            label="Nom de l'école secondaire"
-            name="name_of_secondary_school"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="Nom de l'école secondaire" />
-          </Form.Item>
-          <Form.Item
-            label="Pays de l'école secondaire"
-            name="country_of_secondary_school"
+            label="Domaine d'étude"
+            name="field_of_study"
             rules={[{ required: true }]}
           >
             <Select
-              placeholder="Pays de l'école secondaire"
-              options={countries}
-              showSearch
+              placeholder="Domaine d'étude"
+              options={[
+                { value: "Sciences humaines", label: "Sciences humaines" },
+                {
+                  value: "Lettres et langues",
+                  label: "Lettres et langues",
+                },
+                { value: "Sciences sociales", label: "Sciences sociales" },
+                { value: "Droit", label: "Droit" },
+                {
+                  value: "Économie et gestion",
+                  label: "Économie et gestion",
+                },
+                { value: "Sciences exactes", label: "Sciences exactes" },
+                { value: "Mathématiques", label: "Mathématiques" },
+                { value: "Informatique", label: "Informatique" },
+                {
+                  value: "Sciences de l’ingénieur",
+                  label: "Sciences de l’ingénieur",
+                },
+                { value: "Santé", label: "Santé" },
+                { value: "Médecine", label: "Médecine" },
+                { value: "Éducation", label: "Éducation" },
+                { value: "Arts", label: "Arts" },
+                { value: "Architecture", label: "Architecture" },
+                {
+                  value: "Sciences de l’environnement",
+                  label: "Sciences de l’environnement",
+                },
+                { value: "Agronomie", label: "Agronomie" },
+              ]}
             />
           </Form.Item>
           <Form.Item
-            label="Province de l'école secondaire"
-            name="province_of_secondary_school"
+            label="Titre académique"
+            name="academic_title"
             rules={[{ required: true }]}
           >
-            <Input placeholder="Province de l'école secondaire" />
-          </Form.Item>
-          <Form.Item
-            label="Ville ou Territoire de l'école"
-            name="territory_or_municipality_of_school"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="Territoire ou municipalité de l'école" />
-          </Form.Item>
-          <Form.Item
-            label="Section ou option suivie aux humanités"
-            name="section_followed"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="Section suivie" />
-          </Form.Item>
-          <Form.Item
-            label="Année d'obtention du diplôme"
-            name="year_of_diploma_obtained"
-            rules={[{ required: true }]}
-          >
-            <DatePicker
-              placeholder="Année"
-              mode="year"
-              picker="year"
-              format="YYYY"
+            <Select
+              placeholder="Titre académique"
+              options={[
+                { value: "Licence / Bachelor", label: "Licence / Bachelor" },
+                {
+                  value: "Licence Professionnelle",
+                  label: "Licence Professionnelle",
+                },
+                { value: "Master", label: "Master" },
+                { value: "Master Recherche", label: "Master Recherche" },
+                {
+                  value: "Master Professionnel",
+                  label: "Master Professionnel",
+                },
+                { value: "Ingénieur diplômé", label: "Ingénieur diplômé" },
+                {
+                  value: "Mastère Spécialisé (MS)",
+                  label: "Mastère Spécialisé (MS)",
+                },
+                {
+                  value: "MBA (Master of Business Administration)",
+                  label: "MBA (Master of Business Administration)",
+                },
+                { value: "Doctorat / PhD", label: "Doctorat / PhD" },
+                {
+                  value: "Doctorat Professionnel",
+                  label: "Doctorat Professionnel",
+                },
+                {
+                  value: "Habilitation à diriger des recherches (HDR)",
+                  label: "Habilitation à diriger des recherches (HDR)",
+                },
+              ]}
             />
           </Form.Item>
-          <Form.Item label="Numéro du diplôme" name="diploma_number" rules={[]}>
-            <Input placeholder="Numéro du diplôme" />
-          </Form.Item>
           <Form.Item
-            label="Pourcentage obtenu au diplôme"
-            name="diploma_percentage"
+            label="Grade académique"
+            name="academic_grade"
             rules={[{ required: true }]}
           >
-            <InputNumber
-              placeholder="Pourcentage obtenu au diplôme"
-              step={0.01}
-              suffix="%"
-              min={50}
-              max={100}
+            <Select
+              placeholder="Grade académique"
+              options={[
+                {
+                  value: "Assistant d’enseignement / Moniteur",
+                  label: "Assistant d’enseignement / Moniteur",
+                },
+                {
+                  value: "Assistant de recherche",
+                  label: "Assistant de recherche",
+                },
+                {
+                  value: "Chargé de cours / Chargé d’enseignement",
+                  label: "Chargé de cours / Chargé d’enseignement",
+                },
+                {
+                  value:
+                    "Attaché temporaire d’enseignement et de recherche (ATER)",
+                  label:
+                    "Attaché temporaire d’enseignement et de recherche (ATER)",
+                },
+                {
+                  value: "Maître de conférences",
+                  label: "Maître de conférences",
+                },
+                {
+                  value: "Professeur des universités",
+                  label: "Professeur des universités",
+                },
+                { value: "Professeur émérite", label: "Professeur émérite" },
+                {
+                  value: "Chargé de recherche (CNRS, INRAE, etc.)",
+                  label: "Chargé de recherche (CNRS, INRAE, etc.)",
+                },
+                {
+                  value: "Directeur de recherche",
+                  label: "Directeur de recherche",
+                },
+                {
+                  value: "Doctorant / Doctorante",
+                  label: "Doctorant / Doctorante",
+                },
+                {
+                  value: "Postdoctorant / Postdoctorante",
+                  label: "Postdoctorant / Postdoctorante",
+                },
+                { value: "Professeur associé", label: "Professeur associé" },
+              ]}
             />
           </Form.Item>
-
-          <Divider orientation="left" orientationMargin={0}>
-            <Typography.Title level={3}>
-              Occupations après les humanités
-            </Typography.Title>
-          </Divider>
-          <Form.Item
-            label="Activités professionnelles"
-            name="professional_activity"
-            rules={[]}
+          {/* <Form.Item
+            label="Facultés assignées"
+            name="assigned_faculties"
+            rules={[{ required: true }]}
           >
-            <Input.TextArea placeholder="Activités professionnelles" />
+            <Select
+              mode="multiple"
+              placeholder="Facultés assignées"
+              options={getCurrentFacultiesAsOptions(faculties)}
+            />
           </Form.Item>
-
-          <Divider orientation="left" orientationMargin={0}>
-            <Typography.Title level={3}>
-              Études universitaires précédentes
-            </Typography.Title>
-          </Divider>
-          <Form.List name="previous_university_studies">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, ...restField }, index) => (
-                  <div className="py-4" key={key}>
-                    <Badge count={index + 1} />
-                    <Form.Item
-                      {...restField}
-                      name={[name, "academic_year"]}
-                      label="Année académique"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Veuillez entrer l'année académique",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Année académique" />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, "institution"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Veuillez entrer l'établissement",
-                        },
-                      ]}
-                      label="Établissement"
-                    >
-                      <Input placeholder="Établissement" />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, "study_year_and_faculty"]}
-                      label="Faculté/Département"
-                      rules={[
-                        {
-                          required: true,
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Faculté/Département" />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, "result"]}
-                      label="Résultat"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Veuillez entrer le résultat",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Résultat" />
-                    </Form.Item>
-                    <Button
-                      danger
-                      block
-                      onClick={() => remove(name)}
-                      icon={<DeleteOutlined />}
-                      style={{ boxShadow: "none" }}
-                    >
-                      Supprimer
-                    </Button>
-                  </div>
-                ))}
-                <Form.Item style={{ marginTop: 24 }}>
-                  <Button
-                    type="link"
-                    onClick={() => add()}
-                    icon={<PlusCircleOutlined />}
-                    block
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    Ajouter une ligne
-                  </Button>
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
+          <Form.Item
+            label="Départements assignés"
+            name="assigned_departements"
+            rules={[{ required: true }]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Départements assignés"
+              options={getCurrentDepartmentsAsOptions(departments)}
+            />
+          </Form.Item> */}
+          <Form.Item
+            label="Autres responsabilités/Charge administrative"
+            name="other_responsabilities"
+            rules={[{ required: false }]}
+          >
+            <Input.TextArea placeholder="Autres responsabilités/Charge administrative" />
+          </Form.Item>
         </Form>
       </Drawer>
     </>

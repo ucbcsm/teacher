@@ -42,7 +42,6 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
       <Row gutter={[24, 24]}>
         <Col xs={24} sm={24} md={16}>
           <Space direction="vertical" size="middle">
-            
             <Descriptions
               title={
                 <Space>
@@ -174,43 +173,34 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
                 },
               ]}
             />
-             <Divider />
+            <Divider />
           </Space>
-         
         </Col>
         <Col xs={24} sm={24} md={8}>
-          {/* <Card > */}
-          <Space direction="vertical" style={{ width: "100%" }}>
-           
-              
-            <div>
-              <Typography.Text type="secondary">Assistants</Typography.Text>
-              <List
-                dataSource={course?.assistants!}
-                renderItem={(item, index) => (
-                  <List.Item key={item.id}>
-                    <List.Item.Meta
-                      avatar={
-                        <Avatar
-                          style={{
-                            backgroundColor: getHSLColor(
-                              `${item.user.first_name} ${item.user.last_name} ${item.user.surname}`
-                            ),
-                          }}
-                        >
-                          {item.user.first_name?.charAt(0).toUpperCase()}
-                          {item.user.last_name?.charAt(0).toUpperCase()}
-                        </Avatar>
-                      }
-                      title={`${item?.user.first_name} ${item?.user.last_name} ${item?.user.surname}`}
-                      description={item.academic_title}
-                    />
-                  </List.Item>
-                )}
-              />
-            </div>
-          </Space>
-          {/* </Card> */}
+          <Typography.Text type="secondary">Assistants</Typography.Text>
+          <List
+            dataSource={course?.assistants!}
+            renderItem={(item) => (
+              <List.Item key={item.id}>
+                <List.Item.Meta
+                  avatar={
+                    <Avatar
+                      style={{
+                        backgroundColor: getHSLColor(
+                          `${item.user.first_name} ${item.user.last_name} ${item.user.surname}`
+                        ),
+                      }}
+                    >
+                      {item.user.first_name?.charAt(0).toUpperCase()}
+                      {item.user.last_name?.charAt(0).toUpperCase()}
+                    </Avatar>
+                  }
+                  title={`${item?.user.first_name} ${item?.user.last_name} ${item?.user.surname}`}
+                  description={item.academic_title}
+                />
+              </List.Item>
+            )}
+          />
         </Col>
       </Row>
     </>

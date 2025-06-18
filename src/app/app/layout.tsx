@@ -1,10 +1,12 @@
 "use client";
 
 import {
+  DashboardOutlined,
   LoadingOutlined,
   LogoutOutlined,
   MenuOutlined,
   QuestionOutlined,
+  ReadOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import {
@@ -83,10 +85,12 @@ export default function StudentLayout({
               {
                 key: `/app`,
                 label: "Aperçu",
+                icon: <DashboardOutlined/>
               },
               {
                 key: `/app/courses/`,
                 label: "Cours",
+                icon:<ReadOutlined />,
               },
             ]}
             style={{ flex: 1, minWidth: 0, borderBottom: 0 }}

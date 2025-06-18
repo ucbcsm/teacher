@@ -16,9 +16,10 @@ export async function getTeachersByFaculty(facultyId: number) {
 }
 
 export async function getTeacher(id: number) {
-  const res = await api.get(`/faculty/teachers/${id}/`);
+  const res = await api.get(`/teacher/${id}/`);
   return res.data as Teacher;
 }
+
 export async function createTeacher(
   params: Omit<
     Teacher,

@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Student Access Portal | CI-UCBC",
-  description: "Student Access Portal",
+  title: "Faculty Access Portal | CI-UCBC",
+  description: "Faculty Access Portal",
 };
 
 export default async function RootLayout({

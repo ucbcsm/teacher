@@ -103,11 +103,11 @@ export const login = async (credentials: {
   password: string;
 }) => {
   try {
+    
     const Cookies = await cookies();
 
     const res = await authApi.post("/jwt/create", credentials);
-    // console.log("Res: ",res)
-    // console.log("Status: ",res.status)
+ 
 
     if (res.status !== 200) {
       console.error("Login failed with status:", res.status);

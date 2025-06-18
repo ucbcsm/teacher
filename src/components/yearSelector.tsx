@@ -1,7 +1,7 @@
 "use client";
 import { useYid } from "@/hooks/use-yid";
 import {
-  getYearEnrollments,
+  getYears,
 } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -34,12 +34,12 @@ export function YearSelector() {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const {
-    data: yearEnrollments,
+    data: years,
     isPending,
     isError,
   } = useQuery({
-    queryKey: ["years_enrollments"],
-    queryFn: getYearEnrollments,
+    queryKey: ["years"],
+    queryFn: getYears,
   });
 
   const onFinish = (values: FormDataType) => {
@@ -48,14 +48,14 @@ export function YearSelector() {
   };
 
   const checkYidInYears = () => {
-    const exists = yearEnrollments?.some((y) => y.id === yid);
+    const exists = years?.some((y) => y.id === yid);
     return typeof exists === "boolean" ? !exists : false;
   };
 
-  const getEnrollmentsAsOptions=()=>{
-    const options=yearEnrollments?.map(enrollment=>({
-      value:enrollment.id,
-      label:`${enrollment.academic_year.name} (${enrollment.class_year.acronym})`
+  const getAsOptions=()=>{
+    const options=years?.map(year=>({
+      value:year.id,
+      label:year.name
     }))
     return options
   }
@@ -141,25 +141,7 @@ export function YearSelector() {
                 >
                   <Radio.Group
                     style={{ display: "flex", flexDirection: "column" }}
-                    options={yearEnrollments?.map((enrollment) => ({
-                      value: enrollment.id,
-                      label: (
-                        <Space>
-                          <Typography.Title
-                            level={5}
-                            style={{ marginBottom: 0 }}
-                          >
-                            {enrollment.academic_year.name}
-                          </Typography.Title>
-                          <Tag
-                            color={enrollment.user.is_active?"success":"error"}
-                            style={{ border: 0 }}
-                          >
-                            {enrollment.class_year.acronym}
-                          </Tag>
-                        </Space>
-                      ),
-                    }))}
+                    options={getAsOptions()}
                   />
                 </Form.Item>
                 <Flex justify="space-between" align="center">
@@ -217,7 +199,7 @@ export function YearSelector() {
         <Select
           value={yid}
           variant="filled"
-          options={getEnrollmentsAsOptions()}
+          options={getAsOptions()}
           style={{ width: 136 }}
           onSelect={(value) => {
             setYid(value);

@@ -2,13 +2,8 @@ import { TaughtCourse } from "@/types";
 import api from "../fetcher";
 import dayjs from "dayjs";
 
-export async function getTaughtCoursesByFacultyId(
-  yearId: number,
-  facultyId: number
-) {
-  const res = await api.get(
-    `/faculty/taught-course/?academic_year__id=${yearId}&faculty__id=${facultyId}`
-  );
+export async function getTaughtCourses(yearId: number) {
+  const res = await api.get(`/teacher/course/?academic_year__id=${yearId}`);
   return res.data.results as TaughtCourse[];
 }
 

@@ -1,10 +1,7 @@
 import api from "@/lib/fetcher";
-import { Enrollment } from "@/types";
+import { Enrollment, Year } from "@/types";
 
-export async function getYearEnrollments() {
-  const res = await api.get(`/student/year-enrollment/`);
-  return res.data.results as Enrollment[];
-}
+
 
 export async function getYearEnrollmentsByFacultyId(
   yearId: number,

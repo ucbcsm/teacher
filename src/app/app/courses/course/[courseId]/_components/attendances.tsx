@@ -140,14 +140,14 @@ export const CourseAttendancesList: FC<CourseAttendancesListProps> = ({
     enabled: !!courseId,
   });
 
-  if (isPendingAttendances) {
+  if (isErrorAttendances) {
     return <DataFetchErrorResult />;
   }
 
   return (
     <>
       <Typography.Title level={5}>Listes des présences </Typography.Title>
-      <Card variant="borderless">
+      <Card variant="borderless" >
         <Flex justify="space-between" align="flex-end">
           <Statistic
             loading={isPendingAttendances}

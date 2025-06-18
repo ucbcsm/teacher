@@ -3,7 +3,7 @@ import api from "../fetcher";
 import dayjs from "dayjs";
 
 export async function getTaughtCourses(yearId: number) {
-  const res = await api.get(`/teacher/course/?academic_year__id=${yearId}`);
+  const res = await api.get(`/teacher/courses/?academic_year__id=${yearId}`);
   return res.data.results as TaughtCourse[];
 }
 

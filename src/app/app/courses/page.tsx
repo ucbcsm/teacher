@@ -83,9 +83,7 @@ const CourseListItem: FC<CourseListItemProps> = ({ item }) => {
               <span>({item.available_course.code})</span>
             </Space>
           }
-          // description={
-
-          // }
+          description={item.departement.name}
         />
       </List.Item>
     </>

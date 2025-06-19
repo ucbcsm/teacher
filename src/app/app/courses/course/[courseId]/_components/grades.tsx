@@ -10,22 +10,15 @@ import {
 const gradesData = {
   grades: [
     {
-      type: "TD/TP",
-      label: "Moyenne TD & TP",
+      type: "CC",
+      label: "Contrôle continu (CC)",
       score: 3.5,
       max: 5,
       date: "2025-03-12",
     },
     {
-      type: "TD/TP",
-      label: "Moyenne Interro",
-      score: 2.5,
-      max: 5,
-      date: "2025-04-07",
-    },
-    {
       type: "Examen",
-      label: "Moyenne examen",
+      label: "Examen",
       score: 7,
       max: 10,
       date: "2025-05-21",

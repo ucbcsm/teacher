@@ -13,6 +13,7 @@ import {
   List,
   Statistic,
   Flex,
+  Button,
 } from "antd";
 import { BookOutlined, UserOutlined } from "@ant-design/icons";
 import { TaughtCourse } from "@/types";
@@ -23,12 +24,15 @@ import {
   getYearStatusName,
 } from "@/lib/api";
 import { getHSLColor } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 type CourseOverviewProps = {
   course?: TaughtCourse;
+  cumulativeHours:number
 };
 
-export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
+export const CourseOverview: FC<CourseOverviewProps> = ({ course,cumulativeHours }) => {
+  const router=useRouter()
   if (typeof course === "undefined") {
     return undefined;
   }
@@ -37,13 +41,14 @@ export const CourseOverview: FC<CourseOverviewProps> = ({ course }) => {
       <Row gutter={[24, 24]}>
         <Col xs={24} sm={24} md={6}>
         <Card variant="borderless">
-              <Flex justify="space-between">
+              <Flex justify="space-between" align="flex-end">
                 <Statistic
                   title="Heures prestées"
-                  value={`0/${
+                  value={`${cumulativeHours}/${
                     course?.theoretical_hours! + course?.practical_hours!
                   }`}
                 />
+                <Button type="link" onClick={()=>router.push(`/app/courses/course/${course.id}/?tab=hours-tracking`)}>Voir</Button>
               </Flex>
             </Card>
         </Col>

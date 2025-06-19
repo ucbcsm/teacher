@@ -1,7 +1,7 @@
 "use client";
 
 import { Palette } from "@/components/palette";
-import { getCourseEnrollments,  getTaughtCours } from "@/lib/api";
+import { getCourseEnrollments,  getCumulativeHours,  getHoursTrackings,  getTaughtCours } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -19,6 +19,7 @@ import { StudentCourseGrades } from "./_components/grades";
 import { CourseAttendancesList} from "./_components/attendances";
 import { CourseOverview } from "./_components/overview";
 import { DataFetchErrorResult } from "@/components/errorResult";
+import { CourseHoursTrackingList } from "./_components/hours-tracking";
 
 export default function Page() {
   const {
@@ -32,7 +33,7 @@ export default function Page() {
       "overview",
       "attendances",
       "assessments",
-      "course-evaluation",
+      "hours-tracking",
     ]).withDefault("overview")
   );
 
@@ -54,6 +55,12 @@ export default function Page() {
     queryKey: ["course_enrollments", courseId],
     queryFn: ({queryKey})=> getCourseEnrollments(Number(queryKey[1])),
     enabled:!!courseId
+  });
+
+   const { data:hours, isPending:isPendingCourseHoursTracking, isError:isErrorCourseHoursTracking } = useQuery({
+    queryKey: ["course_hours_tracking", courseId],
+    queryFn: ({ queryKey }) => getHoursTrackings(Number(queryKey[1])),
+    enabled: !!courseId,
   });
 
   if(isError || isErrorCourseEnrollments){
@@ -103,7 +110,7 @@ export default function Page() {
                   | "overview"
                   | "attendances"
                   | "assessments"
-                  | "course-evaluation"
+                  | "hours-tracking"
               )
             }
             items={[
@@ -112,7 +119,7 @@ export default function Page() {
                 label: "Aperçu",
                 children: (
                   <>
-                    <CourseOverview course={course} />
+                    <CourseOverview course={course} cumulativeHours={getCumulativeHours(hours)} />
                   </>
                 ),
               },
@@ -133,6 +140,11 @@ export default function Page() {
                 label: "Notes", // TD/TP & Examens
                 children: <StudentCourseGrades />,
               },
+              {
+                key:"hours-tracking",
+                label:"Heures",
+                children:<CourseHoursTrackingList taughtCourse={course} hours={hours}/>
+              }
             ]}
           />
         </Card>

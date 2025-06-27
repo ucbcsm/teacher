@@ -56,6 +56,9 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
     mutationFn: updateTeacher,
   });
 
+
+  console.log("USER: ",teacher?.user)
+
   const onFinish = (values: any) => {
     if (!teacher) {
       messageApi.error("Aucune donnée disponible pour la mise à jour.");

@@ -62,11 +62,11 @@ export async function updateTeacher({
     };
   };
 }) {
-  // const res = await api.put(`/faculty/teachers/${id}/`, {
-  //   ...params,
-  //   user: params.user.id,
-  // });
- const res= await updateUser({ id: params.user.id, params: { ...params.user } });
+  const res = await api.put(`/faculty/teachers/${id}/`, {
+    ...params,
+    user: params.user.id,
+  });
+ await updateUser({ id: params.user.id, params: { ...params.user } });
   return res.data;
 }
 

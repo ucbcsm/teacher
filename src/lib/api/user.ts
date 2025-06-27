@@ -13,7 +13,7 @@ export async function updateUser({
   id: number;
   params: Partial<Omit<User, "id">>;
 }) {
-  const res = await api.patch(`/account/users/${id}/`, {
+  const res = await api.put(`/account/users/${id}/`, {
     ...params,
   });
   return res.data;

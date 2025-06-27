@@ -91,9 +91,9 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
         },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["teachers"] });
+            // queryClient.invalidateQueries({ queryKey: ["teachers"] });
             queryClient.invalidateQueries({
-              queryKey: ["teacher", `${teacher.id}`],
+              queryKey: ["teacher"],
             });
             messageApi.success("Profil enseignant mise à jour avec succès.");
             setEditMatricule(false);

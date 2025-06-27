@@ -44,12 +44,7 @@ export async function updateTeacher({
   params,
 }: {
   id: number;
-  params: Partial<
-    Omit<
-      Teacher,
-      "id" | "user"
-    >
-  > & {
+  params: Partial<Omit<Teacher, "id" | "user">> & {
     user: {
       id: number;
       first_name: string;
@@ -57,21 +52,21 @@ export async function updateTeacher({
       surname: string;
       email: string;
       avatar: string | null;
-      pending_avatar:string | null;
+      pending_avatar: string | null;
       matricule: string;
       is_permanent_teacher: boolean;
-              is_active: boolean;
-              is_staff: boolean,
-              is_student: boolean,
-              is_superuser: boolean,
+      is_active: boolean;
+      is_staff: boolean;
+      is_student: boolean;
+      is_superuser: boolean;
     };
   };
 }) {
-  const res = await api.put(`/faculty/teachers/${id}/`, {
-    ...params,
-    user: params.user.id,
-  });
-  await updateUser({ id: params.user.id, params: { ...params.user } });
+  // const res = await api.put(`/faculty/teachers/${id}/`, {
+  //   ...params,
+  //   user: params.user.id,
+  // });
+ const res= await updateUser({ id: params.user.id, params: { ...params.user } });
   return res.data;
 }
 
@@ -84,7 +79,6 @@ export function getTeachersAsOptions(teachers?: Teacher[]) {
     };
   });
 }
-
 
 export async function getTeacherDashboard(yearId: number, teacherId: number) {
   const res = await api.get(

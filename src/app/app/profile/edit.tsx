@@ -66,10 +66,6 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
           params: {
             ...values,
             date_of_birth: dayjs(values.date_of_birth).format("YYYY-MM-DD"),
-            assigned_faculties:
-              teacher.assigned_faculties?.map((fac) => fac.id) || [],
-            assigned_departements:
-              teacher.assigned_departements?.map((dept) => dept.id) || [],
             institution_of_origin: values.is_permanent_teacher
               ? ""
               : values.institution_of_origin,
@@ -81,8 +77,12 @@ export const EditTeacherProfileForm: FC<EditTeacherProfileFormProps> = ({
               email: values.email,
               avatar: teacher?.user.avatar,
               matricule: values.matricule,
-              pending_avatar: teacher?.user.pending_avatar,
+              pending_avatar: teacher?.user.pending_avatar || null,
               is_permanent_teacher: values.is_permanent_teacher,
+              is_active: teacher.user.is_active,
+              is_staff: teacher.user.is_staff,
+              is_student: teacher.user.is_student,
+              is_superuser: teacher.user.is_superuser,
             },
           },
         },

@@ -64,3 +64,7 @@ export function percentageFormatter(value: number) {
     maximumFractionDigits: 2,
   }).format(value / 100);
 }
+
+export function toFixedNumber(value: number | string, fixed: number = 0) {
+  return Number(Number(value).toFixed(fixed));
+}

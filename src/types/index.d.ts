@@ -309,7 +309,7 @@ export type AttendanceList = z.infer<typeof AttendanceList>;
 
 export const AttendanceListItem = z.object({
   id: z.number(),
-  student: PeriodEnrollment,
+  student: Enrollment,//PeriodEnrollment, 
   status: z.enum(["present", "absent", "justified"]),
   note: z.string().nullable(),
 });

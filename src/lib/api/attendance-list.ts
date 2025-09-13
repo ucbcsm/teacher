@@ -94,7 +94,7 @@ export const getAttendanceItemsFromCourseEnrollments = (
 ): Omit<AttendanceListItem, "id" & { id?: number }>[] => {
   return (
     enrollments?.map((enrollment) => ({
-      student: enrollment.student,
+      student: enrollment.student.year_enrollment,
       status: "present",
       note: null,
     })) || []

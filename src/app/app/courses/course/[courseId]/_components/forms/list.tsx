@@ -16,34 +16,27 @@ type ListItemProps = {
 };
 const ListItem: FC<ListItemProps> = ({ item, index, editRecordStatus }) => {
   return (
-    <List.Item
-    style={{paddingLeft:0, paddingRight:0}}
-      
-    >
+    <List.Item style={{ paddingLeft: 0, paddingRight: 0 }}>
       <List.Item.Meta
         title={
           <Typography.Text>
-            {item.student.year_enrollment.user.first_name}{" "}
-            {item.student.year_enrollment.user.last_name}{" "}
-            {item.student.year_enrollment.user.surname}
+            {item.student.user.first_name} {item.student.user.last_name}{" "}
+            {item.student.user.surname}
           </Typography.Text>
         }
-        description={<Flex justify="space-between" align="center">
-          <Typography.Text type="secondary">
-           { item.student.year_enrollment.user.matricule.padStart(
-          6,
-          "0"
-        )}
-          </Typography.Text>
-          <AttendanceController
-          record={item}
-          index={index}
-          editRecordStatus={editRecordStatus!}
-        />
-        
-        </Flex>}
+        description={
+          <Flex justify="space-between" align="center">
+            <Typography.Text type="secondary">
+              {item.student.user.matricule.padStart(6, "0")}
+            </Typography.Text>
+            <AttendanceController
+              record={item}
+              index={index}
+              editRecordStatus={editRecordStatus!}
+            />
+          </Flex>
+        }
       />
-      
     </List.Item>
   );
 };
